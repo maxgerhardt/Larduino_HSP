@@ -457,7 +457,9 @@ int main(void) {
   // for case of 16MHz crystall, no clock divider
   PMCR = 0x80;
   PMCR = 0x97;
-  for(GPIOR0 = 0xff; GPIOR0 > 0; --GPIOR0);
+  for(GPIOR0 = 0xff; GPIOR0 > 0; --GPIOR0)
+  	asm volatile ("nop");
+
   PMCR = 0x80;
   PMCR = 0xb7;
 

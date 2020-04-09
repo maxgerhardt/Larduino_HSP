@@ -18,6 +18,8 @@
   Public License along with this library; if not, write to the
   Free Software Foundation, Inc., 59 Temple Place, Suite 330,
   Boston, MA  02111-1307  USA
+
+  $Id: wiring.h 249 2007-02-03 16:52:51Z mellis $
 */
 
 #ifndef Pins_Arduino_h
@@ -66,6 +68,8 @@ static const uint8_t SCK  = PIN_SPI_SCK;
 static const uint8_t SDA = PIN_WIRE_SDA;
 static const uint8_t SCL = PIN_WIRE_SCL;
 
+#define LED_BUILTIN 	(13)
+
 #define PIN_A0   (14)
 #define PIN_A1   (15)
 #define PIN_A2   (16)
@@ -75,19 +79,21 @@ static const uint8_t SCL = PIN_WIRE_SCL;
 #define PIN_A6   (20)
 #define PIN_A7   (21)
 
-static const uint8_t A0 = PIN_A0;
-static const uint8_t A1 = PIN_A1;
-static const uint8_t A2 = PIN_A2;
-static const uint8_t A3 = PIN_A3;
-static const uint8_t A4 = PIN_A4;
-static const uint8_t A5 = PIN_A5;
-static const uint8_t A6 = PIN_A6;
-static const uint8_t A7 = PIN_A7;
+static const uint8_t A0 = 14;
+static const uint8_t A1 = 15;
+static const uint8_t A2 = 16;
+static const uint8_t A3 = 17;
+static const uint8_t A4 = 18;
+static const uint8_t A5 = 19;
+#if defined(__LGT8FX8E__) || defined(__LGT8FX8P__)
+static const uint8_t A6 = 20;
+static const uint8_t A7 = 21;
 #if defined(__LGT8FX8P48__)
 static const uint8_t A8 = 23;
 static const uint8_t A9 = 24;
 static const uint8_t A10 = 25;
 static const uint8_t A11 = 26;
+#endif
 #endif
 
 #define D0	0	/* PD0 */
@@ -161,9 +167,6 @@ static const uint8_t A11 = 26;
 #define	D37	37	/* PF5 */
 #define	D38	38	/* PF6 */
 #define	D39	39	/* PF7 */
-#define OC3C 35 /* PF3 for OC3C */
-#define D40 35	/* PF3 for OC3C */
-#define D41 41  /* C3AAC for OC3A */
 #else
 #define E0	22
 #define E2	23
@@ -191,7 +194,7 @@ static const uint8_t A11 = 26;
 #define	V5D4	28
 #define	AGND	29
 #define	DACO	30
-#define	PGAO	31
+#define	PGAO	32
 #endif
 
 #define digitalPinToPCICR(p)    (((p) >= 0 && (p) <= 21) ? (&PCICR) : ((uint8_t *)0))
@@ -317,7 +320,6 @@ const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
 	PF, /* 37 */
 	PF, /* 38 */
 	PF, /* 39 */
-	PF, /* 40 */
 #else
 	PE, /* 22 */
 	PE, /* 23 */
@@ -367,11 +369,10 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 	_BV(1), /* 33, port F1 */
 	_BV(2), /* 34, port F2 */
 	_BV(3), /* 35, port F3 */
-	_BV(4), /* 36, port F4 */
-	_BV(5), /* 37, port F5 */
-	_BV(6), /* 38, port F6 */
-	_BV(7), /* 39, port F7 */
-	_BV(3), /* 40, port F3 for OC3C */
+	_BV(4), /* 34, port F4 */
+	_BV(5), /* 34, port F5 */
+	_BV(6), /* 34, port F6 */
+	_BV(7), /* 34, port F7 */
 #else
 	_BV(0), /* 22, port E0 */
 	_BV(2), /* 23, port E2 */ 
@@ -384,13 +385,8 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 
 const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 	NOT_ON_TIMER, /* 0 - port D */
-#if defined(__LGT8FX8P32__)	
-	TIMER3A, //NOT_ON_TIMER,
-	TIMER3B, //NOT_ON_TIMER,
-#else
 	NOT_ON_TIMER,
 	NOT_ON_TIMER,
-#endif
 	// on the ATmega168, digital pin 3 has hardware pwm
 #if defined(__AVR_ATmega8__)
 	NOT_ON_TIMER,
@@ -421,51 +417,20 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #endif
 	NOT_ON_TIMER,
 	NOT_ON_TIMER,
+	NOT_ON_TIMER,
 	NOT_ON_TIMER, /* 14 - port C */
 	NOT_ON_TIMER,
 	NOT_ON_TIMER,
 	NOT_ON_TIMER,
 	NOT_ON_TIMER,
 	NOT_ON_TIMER,
-	NOT_ON_TIMER, /* 20 = E1 */ 
+	NOT_ON_TIMER,
 #if defined(__LGT8FX8E__)
-	LGTDAO1,	/* 21 - E3 */
-#else
-	NOT_ON_TIMER, /* 21  E3 */
+	LGTDAO1,
 #endif
-// Log(HSP v3.7): for additional PWM output
-#if defined(__LGT8FX8P48__)
-	NOT_ON_TIMER, /* 22 - B6 */
-	NOT_ON_TIMER, /* 23 - C7 */
-	NOT_ON_TIMER, /* 24 - F0 */
-	NOT_ON_TIMER, /* 25 - E6 */
-	NOT_ON_TIMER, /* 26 - E7 */
-	NOT_ON_TIMER, /* 27 - B7 */
-	NOT_ON_TIMER, /* 28 - C6 */
-	NOT_ON_TIMER, /* 29 - E0 */
-	NOT_ON_TIMER, /* 30 - E2 */
-	TIMER0AX,	  /* 31 - E4 */
-	NOT_ON_TIMER, /* 32 - E5 */
-	TIMER3AX,	  /* 33 - F1 */
-	TIMER3BX,	  /* 34 - F2 */
-	TIMER0BX,	  /* 35 - F3 */
-	TIMER1BX,	  /* 36 - F4 */
-	TIMER1AX,	  /* 37 - F5 */
-	TIMER2AX,	  /* 38 - F6 */
-	TIMER2BX,	  /* 39 - F7 */
-	TIMER3C,	  /* 40 - F3 for OC3C */
-	TIMER3AA,	  /* 41 - OC3A/ACO */
-#elif defined(__LGT8FX8P32__)
-	NOT_ON_TIMER, /* 22 - E0 */
-	NOT_ON_TIMER, /* 23 - E2 */
-	TIMER1BX,	  /* 24 - E4 */
-	TIMER1AX,	  /* 25 - E5 */
-	NOT_ON_TIMER, /* 26 - E6 */		
-#endif
-// Log(HSP v3.7): END
 };
 
-#endif /* ARDUINO_MAIN */
+#endif
 
 // These serial port names are intended to allow libraries and architecture-neutral
 // sketches to automatically default to the correct port name for a particular type

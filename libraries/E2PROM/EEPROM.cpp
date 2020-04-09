@@ -34,10 +34,11 @@
 /******************************************************************************
  * User API
  ******************************************************************************/
+
 uint8_t EEPROMClass::read(uint16_t address)
 {
 	 EEARL = address & 0xff;
-	 EEARH = address >> 8;
+	 EEARH = (address >> 8) & 0x3;
 	 
 	 EECR |= (1 << EERE);
 	 __asm__ __volatile__ ("nop" ::);
@@ -53,7 +54,7 @@ void EEPROMClass::write(uint16_t address, uint8_t value)
 
 	// set address & data
 	EEARL = address & 0xff;
-	EEARH = address >> 8;
+	EEARH = (address >> 8) & 0x3;
 	EEDR = value;
 	 
 	cli();	
@@ -90,7 +91,7 @@ uint32_t EEPROMClass::read32(uint16_t address)
 	uint32_t dwTmp;
 
 	 EEARL = address & 0xff;
-	 EEARH = (address >> 8) & 0x1;
+	 EEARH = (address >> 8) & 0x3;
 	 
 	 EECR |= (1 << EERE);
 	
@@ -145,14 +146,13 @@ void EEPROMClass::writeSWM(uint16_t address, uint32_t *pData, uint8_t length)
 	EEARL = address;
 
 	for(i = 0; i < length; i++) {
+		if(i == (length - 1)) // the last word
+			e2pSWMOFF();
 
 		E2PD0 = (uint8_t)pData[i];
 		E2PD1 = (uint8_t)(pData[i] >> 8);
 		E2PD2 = (uint8_t)(pData[i] >> 16);
 		E2PD3 = (uint8_t)(pData[i] >> 24);
-
-		if(i == (length - 1)) // the last word
-			e2pSWMOFF();
 
 		__bk_sreg = SREG;
 		cli();

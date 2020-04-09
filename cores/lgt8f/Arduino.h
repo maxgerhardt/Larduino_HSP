@@ -43,7 +43,7 @@ void yield(void);
 #define INPUT 0x0
 #define OUTPUT 0x1
 #define INPUT_PULLUP 0x2
-#define ANALOG	0x3
+#define ANALOG 0x3
 
 #define PI 3.1415926535897932384626433832795
 #define HALF_PI 1.5707963267948966192313216916398
@@ -62,18 +62,18 @@ void yield(void);
 #define FALLING 2
 #define RISING 3
 
-#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
-  #define DEFAULT 0
-  #define EXTERNAL 1
-  #define INTERNAL1V1 2
-  #define INTERNAL INTERNAL1V1
+#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) 
+#define DEFAULT 0
+#define EXTERNAL 1
+#define INTERNAL1V1 2
+#define INTERNAL INTERNAL1V1
 #elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-  #define DEFAULT 0
-  #define EXTERNAL 4
-  #define INTERNAL1V1 8
-  #define INTERNAL INTERNAL1V1
-  #define INTERNAL2V56 9
-  #define INTERNAL2V56_EXTCAP 13
+#define DEFAULT 0
+#define EXTERNAL 4
+#define INTERNAL1V1 8
+#define INTERNAL INTERNAL1V1
+#define INTERNAL2V56 9
+#define INTERNAL2V56_EXTCAP 13
 #else  
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)
 #define INTERNAL1V1 2
@@ -142,11 +142,8 @@ int digitalRead(uint8_t);
 void digitalToggle(uint8_t);
 int analogRead(uint8_t);
 void analogReference(uint8_t mode);
-void analogWrite(uint8_t, uint16_t);
+void analogWrite(uint8_t, int);
 void analogReadResolution(uint8_t);
-
-void pwmWrite(uint8_t, uint16_t);
-void pwmTurnOff(uint8_t);
 
 unsigned long millis(void);
 unsigned long micros(void);
@@ -212,50 +209,28 @@ extern const uint8_t PROGMEM digital_pin_to_timer_PGM[];
 #define PL 12
 #endif
 
-#define NOT_ON_TIMER 0x00
-#define TIMER0    0x10
-#define TIMER0A   0x10
-#define TIMER0B   0x11
-#define TIMER0AX  0x12
-#define TIMER0BX  0x13
+#define NOT_ON_TIMER 0
+#define TIMER0A 1
+#define TIMER0B 2
+#define TIMER1A 3
+#define TIMER1B 4
+#define TIMER1C 5
+#define TIMER2  6
+#define TIMER2A 7
+#define TIMER2B 8
 
-#define TIMER1    0x20
-#define TIMER1A   0x20
-#define TIMER1B   0x21
-#define TIMER1C   0x22
-#define TIMER1AX  0x23
-#define TIMER1BX  0x24
-
-#define TIMER2    0x30
-#define TIMER2A   0x31
-#define TIMER2B   0x32
-#define TIMER2AX  0x33
-#define TIMER2BX  0x34
-
-#define TIMER3    0x40
-#define TIMER3A   0x40
-#define TIMER3B   0x41
-#define TIMER3C   0x42
-#define TIMER3AX  0x43
-#define TIMER3BX  0x44
-#define TIMER3AA  0x45
-
-#define TIMER4    0x50
-#define TIMER4A   0x50
-#define TIMER4B   0x51
-#define TIMER4C   0x52
-#define TIMER4D   0x53
-
-#define TIMER5    0x60
-#define TIMER5A   0x60
-#define TIMER5B   0x61
-#define TIMER5C   0x62
-
-#define LGTDAO0   0xf0
-#define LGTDAO1   0xf1
-
-void unlockWrite(volatile uint8_t *, uint8_t);
-void atomicWriteWord(volatile uint8_t *, uint16_t);
+#define TIMER3A 9
+#define TIMER3B 10
+#define TIMER3C 11
+#define TIMER4A 12
+#define TIMER4B 13
+#define TIMER4C 14
+#define TIMER4D 15	
+#define TIMER5A 16
+#define TIMER5B 17
+#define TIMER5C 18
+#define LGTDAO0 80
+#define LGTDAO1 81
 
 #ifdef __cplusplus
 } // extern "C"
@@ -287,57 +262,14 @@ long random(long, long);
 void randomSeed(unsigned long);
 long map(long, long, long, long, long);
 
-// PWM workong mode and frequency settings
-uint16_t pwmFrequency(uint8_t, uint32_t);
-uint32_t pwmResolution(uint8_t, uint8_t);
-
-#define PWM_MODE_NORMAL   0x80
-#define PWM_MODE_COMPM0   0x00
-#define PWM_MODE_COMPM1   0x10
-#define PWM_MODE_COMPM2   0x10
-#define PWM_MODE_COMPM3   0x10
-#define PWM_MODE_SOLO     0x80
-#define PWM_MODE_DUO0     0x00
-#define PWM_MODE_DUO1     0x10
-#define PWM_MODE_DUO2     0x10
-#define PWM_MODE_DUO3     0x10
-
-#define PWM_FREQ_BOOST    0x80
-#define PWM_FREQ_FAST     0x01
-#define PWM_FREQ_NORMAL   0x03
-#define PWM_FREQ_SLOW     0x05
-void pwmMode(uint8_t pin, uint8_t wmode, uint8_t fmode = PWM_FREQ_FAST, uint8_t dband = 0);
-
 #endif
 
 #include "pins_arduino.h"
 
 #if defined(__LGT8FX8E__) || defined(__LGT8FX8P__)
-#include "fastio_digital.h"
-
 #define	INT_OSC	0
 #define	EXT_OSC	1
-void sysClock(uint8_t mode);
-
-// Log(HSP v3.7):
-//  - for system tick based on timer 2
-#if defined(TIMSK) && defined(TOIE2)
-#define stopTick() do { TIMSK &= ~_BV(TOIE2); } while(0)
-#elif defined(TIMSK2) && defined(TOIE2)
-#define stopTick() do { TIMSK2 &= ~_BV(TOIE2); } while(0)
-#else
-#error  Timer2 overflow interrupt is not defined! 
-#endif
-
-#if defined(TIMSK) && defined(TOIE2)
-#define startTick() do { TIMSK |= _BV(TOIE2); } while(0)
-#elif defined(TIMSK2) && defined(TOIE2)
-#define startTick() do { TIMSK |= _BV(TOIE2); } while(0)
-#else
-#error  Timer2 overflow interrupt is not defined! 
-#endif
-// Log(HSP v3.7): END
-
+void sysClock(uint8_t);
 #endif
 
 #ifndef nop

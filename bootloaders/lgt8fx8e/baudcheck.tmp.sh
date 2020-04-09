@@ -1,5 +1,5 @@
 # 1 "baudcheck.c"
-# 1 "C:\\Users\\Administrator\\Documents\\Arduino\\hardware\\LGT\\avr\\bootloaders\\lgt8fx8e//"
+# 1 "E:\\Projects\\Larduino_HSP\\Larduino_HSP_v3.6\\hardware\\LGT\\avr\\bootloaders\\lgt8fx8e//"
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "baudcheck.c"
